@@ -8,9 +8,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Button,
+  Grid,
 } from "@mui/material";
-import * as XLSX from "xlsx";
 import { EMIResults, EMISchedule } from "../../types";
 
 interface ReportProps {
@@ -26,7 +25,6 @@ const Report: React.FC<ReportProps> = ({
   amount,
   totals,
   emiSchedule,
-  selectedTab,
   noOfEmis,
 }) => {
   const formatCurrency = (value: number) => {
@@ -42,40 +40,31 @@ const Report: React.FC<ReportProps> = ({
     });
   };
 
-  const handleDownload = () => {
-    const worksheet = XLSX.utils.json_to_sheet(
-      emiSchedule.map((item) => ({
-        Month: item.month,
-        Date: formatDate(item.month - 1),
-        EMI: item.emi,
-        Principal: item.principal,
-        Interest: item.interest,
-        Balance: item.balance,
-      }))
-    );
-
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(
-      workbook,
-      worksheet,
-      `EMI_Schedule_${noOfEmis}_Months`
-    );
-    XLSX.writeFile(workbook, `emi_schedule_${noOfEmis}_months.xlsx`);
-  };
-
   return (
-    <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-        <Typography variant="h6">
-          {noOfEmis === 13
-            ? "13 EMIs per Year Schedule"
-            : "12 EMIs per Year Schedule"}
-        </Typography>
-      </Box>
+    <Box sx={{ width: '100%' }}>
+      <Grid container spacing={2} sx={{ mb: 2 }}>
+        <Grid size={{ xs: 12, sm: 6, md: 3}}>
+          <Typography variant="subtitle2" color="text.secondary">Principal Amount</Typography>
+          <Typography variant="h6">{formatCurrency(amount)}</Typography>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3}}>
+          <Typography variant="subtitle2" color="text.secondary">Interest Amount</Typography>
+          <Typography variant="h6">{formatCurrency(totals.totalInterest)}</Typography>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3}}>
+          <Typography variant="subtitle2" color="text.secondary">Total EMI Amount</Typography>
+          <Typography variant="h6">{formatCurrency(totals.totalAmount)}</Typography>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3}}>
+          <Typography variant="subtitle2" color="text.secondary">EMI to be paid each year</Typography>
+          <Typography variant="h6">{formatCurrency(emiSchedule[0]?.emi * noOfEmis || 0)}</Typography>
+        </Grid>
+      </Grid>
 
       <TableContainer
         sx={{
-          maxHeight: 400,
+          width: '100%',
+          maxHeight: '100vh',
           "&::-webkit-scrollbar": {
             width: "8px",
             height: "8px",
@@ -93,15 +82,15 @@ const Report: React.FC<ReportProps> = ({
           },
         }}
       >
-        <Table stickyHeader>
+        <Table stickyHeader sx={{ width: '100%' }}>
           <TableHead>
             <TableRow>
-              <TableCell>Month</TableCell>
-              <TableCell>Date</TableCell>
-              <TableCell align="right">Principal</TableCell>
-              <TableCell align="right">Interest</TableCell>
-              <TableCell align="right">EMI</TableCell>
-              <TableCell align="right">Balance</TableCell>
+              <TableCell sx={{ width: '10%' }}>Month</TableCell>
+              <TableCell sx={{ width: '15%' }}>Date</TableCell>
+              <TableCell align="right" sx={{ width: '20%' }}>Principal</TableCell>
+              <TableCell align="right" sx={{ width: '20%' }}>Interest</TableCell>
+              <TableCell align="right" sx={{ width: '20%' }}>EMI</TableCell>
+              <TableCell align="right" sx={{ width: '20%' }}>Balance</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

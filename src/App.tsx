@@ -10,26 +10,12 @@ import {
   Button,
   ToggleButton,
   ToggleButtonGroup,
-  Paper,
   Tabs,
   Tab,
-  IconButton,
-  Tooltip,
 } from "@mui/material";
-import { Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip as ChartTooltip,
-  Legend,
-} from "chart.js";
-import DownloadIcon from "@mui/icons-material/Download";
-import * as XLSX from "xlsx";
 import Charts from "./components/Results/Charts";
 import Report from "./components/Results/Report";
 import TabPanel from "./components/Results/TabPanel";
-
-ChartJS.register(ArcElement, ChartTooltip, Legend);
 
 interface EMISchedule {
   month: number;
@@ -136,26 +122,18 @@ function App() {
 
   const handleAmountChange = (value: number) => {
     setAmount(value);
-    const totals = calculateEMISchedule();
-    setEmiAmount(Math.round(totals.emi));
-    setCurrentTotals(totals);
-    setCurrentSchedule(totals.schedule);
   };
 
   const handleInterestRateChange = (value: number) => {
     setInterestRate(value);
-    const totals = calculateEMISchedule();
-    setEmiAmount(Math.round(totals.emi));
   };
 
   const handleDurationChange = (value: number) => {
     setDuration(value);
-    const totals = calculateEMISchedule();
-    setEmiAmount(Math.round(totals.emi));
   };
 
   const handleDurationUnitChange = (
-    event: React.MouseEvent<HTMLElement>,
+    _: React.MouseEvent<HTMLElement>,
     newUnit: "Months" | "Years"
   ) => {
     if (newUnit !== null) {
@@ -165,18 +143,19 @@ function App() {
       } else {
         setDuration(duration * 12);
       }
-      const totals = calculateEMISchedule();
-      setEmiAmount(Math.round(totals.emi));
     }
   };
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
     setNoOfEmis(newValue === 1 ? 13 : 12);
   };
 
-  const handleDownload = () => {
-
+  const handleEmiAmountChange = (newValue: number) => {
+    setEmiAmount(newValue);
+    const newSchedule = calculateEMISchedule();
+    setCurrentSchedule(newSchedule.schedule);
+    setCurrentTotals(newSchedule);
   };
 
   return (
@@ -184,12 +163,12 @@ function App() {
       <Card>
         <CardContent>
           <Typography variant="h5" gutterBottom>
-            Calculate EMI for your Personal Loan
+            Calculate EMI for your Housing Loan
           </Typography>
 
-          <Grid container spacing={1}>
+          <Grid container spacing={1} component="div">
             {/* Left side - Input form */}
-            <Grid item xs={12} md={3} component="div">
+            <Grid size={{ xs: 12, md: 4 }} component="div">
               <Box sx={{ mb: 4 }}>
                 <Typography variant="subtitle1" gutterBottom>
                   Amount
@@ -242,7 +221,9 @@ function App() {
                 <TextField
                   fullWidth
                   value={emiAmount}
-                  disabled
+                  onChange={(e) =>
+                    handleEmiAmountChange(Number(e.target.value))
+                  }
                   sx={{ mb: 2 }}
                   InputProps={{
                     startAdornment: <Typography sx={{ mr: 1 }}>₹</Typography>,
@@ -371,62 +352,25 @@ function App() {
             {/* Right side - Results */}
             {currentTotals && (
               <>
-                <Grid item xs={12} md={9} component="div">
-
+                <Grid size={{ xs: 12, md: 8 }} component="div">
                   <Tabs value={selectedTab} onChange={handleTabChange}>
                     <Tab label="12 EMIs per year (Fixed EMI)" />
                     <Tab label="13 EMIs per year (Same EMI)" />
                   </Tabs>
-                  <Button
-          variant="contained"
-          onClick={handleDownload}
-          sx={{
-            bgcolor: "#002A4C",
-            "&:hover": {
-              bgcolor: "#001A33",
-            },
-          }}
-        >
-          Download Schedule
-        </Button>
+
                   <TabPanel value={selectedTab} index={0}>
                     <Grid container spacing={1}>
-                      <Grid item xs={12} md={3} component="div">
-                        <Box
-                          sx={{
-                            mb: 2,
-                            p: 1,
-                            bgcolor: "#f5f5f5",
-                            borderRadius: 1,
-                            textAlign: "center",
-                          }}
-                        >
-                          12 EMIs per year (Fixed EMI)
-                        </Box>
-                        <Box
-                          sx={{
-                            overflowX: "auto",
-                            "& .MuiTable-root": {
-                              minWidth: 650,
-                              "& th, & td": {
-                                padding: "8px",
-                                whiteSpace: "nowrap",
-                                fontSize: "0.875rem",
-                              },
-                            },
-                          }}
-                        >
-                          <Report
-                            amount={amount}
-                            totals={currentTotals}
-                            emiSchedule={currentSchedule}
-                            selectedTab={0}
-                            onTabChange={handleTabChange}
-                            noOfEmis={12}
-                          />
-                        </Box>
+                      <Grid size={{ xs: 12, md: 8 }} component="div">
+                        <Report
+                          amount={amount}
+                          totals={currentTotals}
+                          emiSchedule={currentSchedule}
+                          selectedTab={0}
+                          onTabChange={handleTabChange}
+                          noOfEmis={12}
+                        />
                       </Grid>
-                      <Grid item xs={12} md={3} component="div">
+                      <Grid size={{ xs: 12, md: 4 }} component="div">
                         <Charts
                           amount={amount}
                           totals={currentTotals}
@@ -437,43 +381,18 @@ function App() {
                   </TabPanel>
 
                   <TabPanel value={selectedTab} index={1}>
-                    <Grid container spacing={1}>
-                      <Grid item xs={12} md={3} component="div">
-                        <Box
-                          sx={{
-                            mb: 2,
-                            p: 1,
-                            bgcolor: "#f5f5f5",
-                            borderRadius: 1,
-                            textAlign: "center",
-                          }}
-                        >
-                          13 EMIs per year (Same EMI)
-                        </Box>
-                        <Box
-                          sx={{
-                            overflowX: "auto",
-                            "& .MuiTable-root": {
-                              minWidth: 650,
-                              "& th, & td": {
-                                padding: "8px",
-                                whiteSpace: "nowrap",
-                                fontSize: "0.875rem",
-                              },
-                            },
-                          }}
-                        >
-                          <Report
-                            amount={amount}
-                            totals={currentTotals}
-                            emiSchedule={currentSchedule}
-                            selectedTab={1}
-                            onTabChange={handleTabChange}
-                            noOfEmis={13}
-                          />
-                        </Box>
+                    <Grid container spacing={1} component="div">
+                      <Grid size={{ xs: 12, md: 8 }} component="div">
+                        <Report
+                          amount={amount}
+                          totals={currentTotals}
+                          emiSchedule={currentSchedule}
+                          selectedTab={1}
+                          onTabChange={handleTabChange}
+                          noOfEmis={13}
+                        />
                       </Grid>
-                      <Grid item xs={12} md={3} component="div">
+                      <Grid size={{ xs: 12, md: 4 }} component="div">
                         <Charts
                           amount={amount}
                           totals={currentTotals}

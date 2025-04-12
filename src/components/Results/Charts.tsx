@@ -1,4 +1,4 @@
-import { Box, Grid, Typography, Paper } from "@mui/material";
+import { Box, Typography, Paper } from "@mui/material";
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -16,7 +16,7 @@ interface ChartsProps {
   noOfEmis: number;
 }
 
-const Charts = ({ amount, totals, noOfEmis }: ChartsProps) => {
+const Charts = ({ amount, totals }: ChartsProps) => {
   const pieData = {
     labels: ["Principal Amount", "Total Interest"],
     datasets: [
@@ -48,65 +48,63 @@ const Charts = ({ amount, totals, noOfEmis }: ChartsProps) => {
   };
 
   return (
-    <Grid item xs={12} md={4}>
-      <Paper
-        elevation={0}
-        sx={{
-          bgcolor: "#FFF5EB",
-          p: 3,
-          borderRadius: 2,
-          height: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: 3,
-        }}
-      >
+    <Paper
+      elevation={0}
+      sx={{
+        bgcolor: "#FFF5EB",
+        p: 3,
+        borderRadius: 2,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: 3,
+      }}
+    >
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <Typography variant="subtitle1">Monthly EMI</Typography>
+          <Typography variant="h3" sx={{ color: "#002A4C", mb: 3 }}>
+            ₹{Math.round(totals.emi).toLocaleString("en-IN")}*
+          </Typography>
+
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Typography variant="subtitle1">Monthly EMI</Typography>
-            <Typography variant="h3" sx={{ color: "#002A4C", mb: 3 }}>
-              ₹{Math.round(totals.emi).toLocaleString("en-IN")}*
-            </Typography>
+            <Box>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Principal Amount
+              </Typography>
+              <Typography variant="body1" sx={{ color: "#002A4C" }}>
+                ₹{amount.toLocaleString("en-IN")}
+              </Typography>
+            </Box>
 
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Principal Amount
-                </Typography>
-                <Typography variant="body1" sx={{ color: "#002A4C" }}>
-                  ₹{amount.toLocaleString("en-IN")}
-                </Typography>
-              </Box>
+            <Box>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Total Interest Payable
+              </Typography>
+              <Typography variant="body1" sx={{ color: "#002A4C" }}>
+                ₹{Math.round(totals.totalInterest).toLocaleString("en-IN")}*
+              </Typography>
+            </Box>
 
-              <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Total Interest Payable
-                </Typography>
-                <Typography variant="body1" sx={{ color: "#002A4C" }}>
-                  ₹{Math.round(totals.totalInterest).toLocaleString("en-IN")}*
-                </Typography>
-              </Box>
-
-              <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  Total Amount Payable
-                </Typography>
-                <Typography variant="body1" sx={{ color: "#002A4C" }}>
-                  ₹{Math.round(totals.totalAmount).toLocaleString("en-IN")}*
-                </Typography>
-              </Box>
+            <Box>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Total Amount Payable
+              </Typography>
+              <Typography variant="body1" sx={{ color: "#002A4C" }}>
+                ₹{Math.round(totals.totalAmount).toLocaleString("en-IN")}*
+              </Typography>
             </Box>
           </Box>
-
-          <Box sx={{ height: 200, mb: 2 }}>
-            <Typography variant="subtitle1" gutterBottom>
-              Payment Breakdown
-            </Typography>
-            <Pie data={pieData} options={pieOptions} />
-          </Box>
         </Box>
-      </Paper>
-    </Grid>
+
+        <Box sx={{ height: 200, mb: 2 }}>
+          <Typography variant="subtitle1" gutterBottom>
+            Payment Breakdown
+          </Typography>
+          <Pie data={pieData} options={pieOptions} />
+        </Box>
+      </Box>
+    </Paper>
   );
 };
 
