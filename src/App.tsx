@@ -37,7 +37,7 @@ function App() {
   const [noOfEmis, setNoOfEmis] = useState<number>(12);
   const [amount, setAmount] = useState<number>(8000000);
   const [duration, setDuration] = useState<number>(240);
-  const [interestRate, setInterestRate] = useState<number>(9);
+  const [interestRate, setInterestRate] = useState<number>(8.50);
   const [durationUnit, setDurationUnit] = useState<"Months" | "Years">(
     "Months"
   );

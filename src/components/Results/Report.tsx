@@ -28,7 +28,7 @@ const Report: React.FC<ReportProps> = ({
   noOfEmis,
 }) => {
   const formatCurrency = (value: number) => {
-    return `₹${value.toLocaleString("en-IN")}`;
+    return `₹${Math.round(value).toLocaleString("en-IN")}`;
   };
 
   const formatDate = (month: number) => {
